@@ -13,4 +13,4 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.1.150
-    path: "/mnt/nfs/"
+    path: "/mnt/zpool/nfs"
