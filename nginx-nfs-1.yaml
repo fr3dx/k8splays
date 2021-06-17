@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx1
+  name: nginx-nfs-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx1
+  template:
+    metadata:
+      labels:
+        run: nginx1
+    spec:
+      volumes:
+      - name: www
+        persistentVolumeClaim:
+          claimName: pvc-nfs-pv1
+      containers:
+      - image: nginx
+        name: nginx1
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
