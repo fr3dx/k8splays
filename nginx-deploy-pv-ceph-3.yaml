@@ -1,0 +1,59 @@
+#This manifest clone nginx-2's (nginx-deploy-pv-ceph-2.yaml) PV and use it as nginx-3 (nginx-deploy-pv-ceph-3.yaml)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-pv-claim-2-cloned
+spec:
+  storageClassName: rook-ceph-block-2
+  dataSource:
+    name: nginx-pv-claim-2
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-3
+  labels:
+    app: nginx-3
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: nginx-3
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-3
+  labels:
+    app: nginx-3
+spec:
+  selector:
+    matchLabels:
+      app: nginx-3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nginx-3
+    spec:
+      containers:
+        - image: nginx
+          name: nginx-3
+          ports:
+            - containerPort: 80
+              name: nginx-3
+          volumeMounts:
+            - name: nginx-persistent-storage
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: nginx-persistent-storage
+          persistentVolumeClaim:
+            claimName: nginx-pv-claim-2-cloned

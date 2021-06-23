@@ -1,4 +1,4 @@
-#this manifest will create basic index.html on pv -> remove -> create nginx-deploy-pv-ceph-2 deploy,svc and persistent data will be there
+#This manifest (nginx-deploy-pv-ceph-1) will create index.html on PV help of init container -> after removal -> create nginx-2 (nginx-deploy-pv-ceph-2.yaml) and persistent data still be there
 apiVersion: v1
 kind: Service
 metadata:
