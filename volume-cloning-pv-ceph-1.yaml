@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cloned-pvc
+spec:
+  storageClassName: nginx-pv-claim
+  dataSource:
+    name: nginx-pv-claim
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

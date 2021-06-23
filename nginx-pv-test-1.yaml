@@ -1,25 +1,24 @@
-#this manifest will create basic index.html on pv -> remove -> create nginx-deploy-pv-ceph-2 deploy,svc and persistent data will be there
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: nginx-pv-test
   labels:
-    app: nginx
+    app: nginx-pv-test
 spec:
   ports:
     - port: 80
   selector:
-    app: nginx
+    app: nginx-pv-test
   type: NodePort
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nginx-pv-claim-2
+  name: nginx-pv-test-1-claim
   labels:
-    app: nginx
+    app: nginx-pv-test
 spec:
-  storageClassName: rook-ceph-block-2
+  storageClassName: rook-ceph-block
   accessModes:
     - ReadWriteOnce
   resources:
@@ -29,19 +28,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: nginx-pv-test
   labels:
-    app: nginx
+    app: nginx-pv-test
 spec:
   selector:
     matchLabels:
-      app: nginx
+      app: nginx-pv-test
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: nginx
+        app: nginx-pv-test
     spec:
       initContainers:
         - name: busybox
@@ -50,10 +49,10 @@ spec:
             - name: nginx-persistent-storage
               mountPath: /nginx-data
           command: ["/bin/sh"]
-          args: ["-c", "echo '<h1>ROOK-CEPH!!!:)</h1>' > /nginx-data/index.html"]
+          args: ["-c", "echo '<h1>PVTEST!!!:)</h1>' > /nginx-data/index.html"]
       containers:
         - image: nginx
-          name: nginx
+          name: nginx-pv-test
           ports:
             - containerPort: 80
               name: nginx
@@ -63,4 +62,4 @@ spec:
       volumes:
         - name: nginx-persistent-storage
           persistentVolumeClaim:
-            claimName: nginx-pv-claim-2
+            claimName: nginx-pv-test-1-claim
